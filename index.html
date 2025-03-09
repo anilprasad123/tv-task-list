@@ -5,51 +5,122 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      font-size: 36px;
-      padding: 50px;
+      font-size: 48px;
+      padding: 100px;
       background: #1a1a1a;
       color: white;
       text-align: center;
     }
     .task {
-      padding: 20px;
-      margin: 20px 0;
+      padding: 40px;
+      margin: 30px 0;
       background: #333;
-      border-radius: 10px;
-      border-left: 20px solid transparent;
+      border-radius: 20px;
+      border-left: 30px solid transparent;
     }
     .high { border-left-color: #ff4444; }
     .medium { border-left-color: #ffaa00; }
     .low { border-left-color: #44cc44; }
+    .completed {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+    button {
+      font-size: 36px;
+      margin-top: 20px;
+      padding: 15px 30px;
+      background: #44cc44;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    input, select {
+      font-size: 36px;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 2px solid #444;
+      background: #333;
+      color: white;
+    }
   </style>
 </head>
 <body>
   <h1>My Tasks</h1>
+
+  <!-- Task Creation Form -->
+  <form id="taskForm">
+    <input type="text" id="taskName" placeholder="Task Name" required>
+    <select id="priority" required>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <input type="date" id="dueDate" required>
+    <button type="submit">Add Task</button>
+  </form>
+
+  <!-- Task List -->
   <div id="tasks"></div>
 
   <script>
     // Replace with YOUR SheetDB API endpoint
     const API_URL = 'https://sheetdb.io/api/v1/a0gytxlxm53po';
 
-    // Fetch tasks from SheetDB
+    // Auto-refresh every 60 seconds
+    setInterval(() => location.reload(), 60000);
+
+    // Fetch and display tasks
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
         const tasksDiv = document.getElementById('tasks');
         data.forEach(task => {
           const taskDiv = document.createElement('div');
-          taskDiv.className = 'task ' + task.Priority.toLowerCase();
+          taskDiv.className = `task ${task.Priority.toLowerCase()} ${task.Completed ? 'completed' : ''}`;
           taskDiv.innerHTML = `
             <strong>${task.TaskName}</strong><br>
             Due: ${task.DueDate}
+            <button onclick="toggleComplete('${task.id}')">✓</button>
           `;
           tasksDiv.appendChild(taskDiv);
         });
       })
       .catch(error => {
         console.error('Error fetching tasks:', error);
-        document.getElementById('tasks').innerHTML = 'Failed to load tasks. Check the console.';
+        tasksDiv.innerHTML = 'Failed to load tasks. Check the console.';
       });
+
+    // Add new task
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const task = {
+        TaskName: document.getElementById('taskName').value,
+        Priority: document.getElementById('priority').value,
+        DueDate: document.getElementById('dueDate').value,
+        Completed: false
+      };
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(task)
+      })
+      .then(() => {
+        document.getElementById('taskForm').reset();
+        location.reload(); // Refresh to show new task
+      });
+    });
+
+    // Toggle task completion
+    function toggleComplete(taskId) {
+      fetch(`${API_URL}/id/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Completed: true })
+      })
+      .then(() => location.reload())
+      .catch(error => console.error('Error:', error));
+    }
   </script>
 </body>
 </html>
