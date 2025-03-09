@@ -3,46 +3,7 @@
 <head>
   <title>TV Task List</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      font-size: 48px;
-      padding: 100px;
-      background: #1a1a1a;
-      color: white;
-      text-align: center;
-    }
-    .task {
-      padding: 40px;
-      margin: 30px 0;
-      background: #333;
-      border-radius: 20px;
-      border-left: 30px solid transparent;
-    }
-    .high { border-left-color: #ff4444; }
-    .medium { border-left-color: #ffaa00; }
-    .low { border-left-color: #44cc44; }
-    .completed {
-      opacity: 0.5;
-      text-decoration: line-through;
-    }
-    button {
-      font-size: 36px;
-      margin-top: 20px;
-      padding: 15px 30px;
-      background: #44cc44;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    input, select {
-      font-size: 36px;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: 2px solid #444;
-      background: #333;
-      color: white;
-    }
+    /* ... (keep your existing styles) ... */
   </style>
 </head>
 <body>
@@ -64,41 +25,31 @@
   <div id="tasks"></div>
 
   <script>
-    // Replace with YOUR SheetDB API endpoint
     const API_URL = 'https://sheetdb.io/api/v1/u7v7evn1lkxb3';
 
-    // Fetch and display tasks
-    fetch(API_URL)
-      .then(response => response.json())
-      .then(data => {
-        const tasksDiv = document.getElementById('tasks');
-        data.forEach(task => {
-          // Check if 'Completed' is stored as boolean or text
-          const isCompleted = task.Completed === true || task.Completed === 'TRUE';
+    // Fetch existing tasks to generate a new ID
+    async function generateNewId() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        const maxId = data.reduce((max, task) => Math.max(max, task.id || 0), 0);
+        return maxId + 1;
+      } catch (error) {
+        console.error('Error generating ID:', error);
+        return 1; // Fallback if no tasks exist
+      }
+    }
 
-          const taskDiv = document.createElement('div');
-          taskDiv.className = `task ${task.Priority.toLowerCase()} ${isCompleted ? 'completed' : ''}`;
-          taskDiv.innerHTML = `
-            <strong>${task.TaskName}</strong><br>
-            Due: ${task.DueDate}
-            <button onclick="toggleComplete('${task.id}', ${isCompleted})">✓</button>
-          `;
-          tasksDiv.appendChild(taskDiv);
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching tasks:', error);
-        document.getElementById('tasks').innerHTML = 'Failed to load tasks. Check the console.';
-      });
-
-    // Add new task
-    document.getElementById('taskForm').addEventListener('submit', function(e) {
+    // Add new task with auto-generated ID
+    document.getElementById('taskForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const newId = await generateNewId();
       const task = {
+        id: newId,
         TaskName: document.getElementById('taskName').value,
         Priority: document.getElementById('priority').value,
         DueDate: document.getElementById('dueDate').value,
-        Completed: false // New tasks are not completed by default
+        Completed: false
       };
       fetch(API_URL, {
         method: 'POST',
@@ -107,26 +58,12 @@
       })
       .then(() => {
         document.getElementById('taskForm').reset();
-        location.reload(); // Refresh to show new task
+        location.reload();
       });
     });
 
-    // Toggle task completion
-    function toggleComplete(taskId, isCompleted) {
-      fetch(`${API_URL}/id/${taskId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Completed: !isCompleted }) // Toggle TRUE/FALSE
-      })
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to update task');
-        location.reload(); // Refresh to show changes
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to update task. Check the console.');
-      });
-    }
+    // Fetch and display tasks (rest of the code remains the same)
+    // ... (existing fetch and toggleComplete code) ...
   </script>
 </body>
 </html>
