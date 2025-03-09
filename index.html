@@ -3,7 +3,50 @@
 <head>
   <title>TV Task List</title>
   <style>
-    /* ... (keep your existing styles) ... */
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 48px;
+      padding: 100px;
+      background: #1a1a1a;
+      color: white;
+      text-align: center;
+    }
+    .task {
+      position: relative; /* Ensure button positions correctly */
+      padding: 40px;
+      margin: 30px 0;
+      background: #333;
+      border-radius: 20px;
+      border-left: 30px solid transparent;
+    }
+    .high { border-left-color: #ff4444; }
+    .medium { border-left-color: #ffaa00; }
+    .low { border-left-color: #44cc44; }
+    .completed {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+    button {
+      position: absolute; /* Position button at top-right */
+      top: 20px;
+      right: 20px;
+      font-size: 36px;
+      padding: 15px 30px;
+      background: #44cc44;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 1; /* Ensure button is above task content */
+    }
+    input, select {
+      font-size: 36px;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 2px solid #444;
+      background: #333;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -27,43 +70,35 @@
   <script>
     const API_URL = 'https://sheetdb.io/api/v1/u7v7evn1lkxb3';
 
-    // Fetch existing tasks to generate a new ID
-    async function generateNewId() {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        const maxId = data.reduce((max, task) => Math.max(max, task.id || 0), 0);
-        return maxId + 1;
-      } catch (error) {
-        console.error('Error generating ID:', error);
-        return 1; // Fallback if no tasks exist
-      }
-    }
+    // Fetch and display tasks
+    fetch(API_URL)
+      .then(response => response.json())
+      .then(data => {
+        const tasksDiv = document.getElementById('tasks');
+        data.forEach(task => {
+          const isCompleted = task.Completed === true || task.Completed === 'TRUE';
 
-    // Add new task with auto-generated ID
-    document.getElementById('taskForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const newId = await generateNewId();
-      const task = {
-        id: newId,
-        TaskName: document.getElementById('taskName').value,
-        Priority: document.getElementById('priority').value,
-        DueDate: document.getElementById('dueDate').value,
-        Completed: false
-      };
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(task)
-      })
-      .then(() => {
-        document.getElementById('taskForm').reset();
-        location.reload();
+          const taskDiv = document.createElement('div');
+          taskDiv.className = `task ${task.Priority.toLowerCase()} ${isCompleted ? 'completed' : ''}`;
+          taskDiv.innerHTML = `
+            <strong>${task.TaskName}</strong><br>
+            Due: ${task.DueDate}
+            <button onclick="toggleComplete('${task.id}', ${isCompleted})">✓</button>
+          `;
+          tasksDiv.appendChild(taskDiv);
+        });
       });
-    });
 
-    // Fetch and display tasks (rest of the code remains the same)
-    // ... (existing fetch and toggleComplete code) ...
+    // Toggle task completion
+    function toggleComplete(taskId, isCompleted) {
+      fetch(`${API_URL}/id/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Completed: !isCompleted })
+      })
+      .then(() => location.reload())
+      .catch(error => console.error('Error:', error));
+    }
   </script>
 </body>
 </html>
