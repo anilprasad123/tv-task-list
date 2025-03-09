@@ -1,67 +1,55 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  <title>TV Task List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 36px;
+      padding: 50px;
+      background: #1a1a1a;
+      color: white;
+      text-align: center;
+    }
+    .task {
+      padding: 20px;
+      margin: 20px 0;
+      background: #333;
+      border-radius: 10px;
+      border-left: 20px solid transparent;
+    }
+    .high { border-left-color: #ff4444; }
+    .medium { border-left-color: #ffaa00; }
+    .low { border-left-color: #44cc44; }
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;TV Task List&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-family: Arial, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>font-size: 36px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 50px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: #1a1a1a;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.task {</p>
-<p class="p1"><span class="Apple-converted-space">      </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>margin: 20px 0;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>background: #333;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-radius: 10px;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>border-left: 20px solid transparent;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.high { border-left-color: #ff4444; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.medium { border-left-color: #ffaa00; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.low { border-left-color: #44cc44; }</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;My Tasks&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="tasks"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Replace with YOUR SheetDB API endpoint</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const API_URL = ‘https://sheetdb.io/api/v1/a0gytxlxm53po’;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>// Fetch tasks from SheetDB</p>
-<p class="p1"><span class="Apple-converted-space">    </span>fetch(API_URL)</p>
-<p class="p1"><span class="Apple-converted-space">      </span>.then(response =&gt; response.json())</p>
-<p class="p1"><span class="Apple-converted-space">      </span>.then(data =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tasksDiv = document.getElementById('tasks');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>data.forEach(task =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">          </span>const taskDiv = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">          </span>taskDiv.className = `task ${task.Priority.toLowerCase()}`;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>taskDiv.innerHTML = `</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;strong&gt;${task.TaskName}&lt;/strong&gt;&lt;br&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>Due: ${task.DueDate}</p>
-<p class="p1"><span class="Apple-converted-space">          </span>`;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>tasksDiv.appendChild(taskDiv);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+  <h1>My Tasks</h1>
+  <div id="tasks"></div>
+
+  <script>
+    // Replace with YOUR SheetDB API endpoint
+    const API_URL = 'https://sheetdb.io/api/v1/a0gytxlxm53po';
+
+    // Fetch tasks from SheetDB
+    fetch(API_URL)
+      .then(response => response.json())
+      .then(data => {
+        const tasksDiv = document.getElementById('tasks');
+        data.forEach(task => {
+          const taskDiv = document.createElement('div');
+          taskDiv.className = 'task ' + task.Priority.toLowerCase();
+          taskDiv.innerHTML = `
+            <strong>${task.TaskName}</strong><br>
+            Due: ${task.DueDate}
+          `;
+          tasksDiv.appendChild(taskDiv);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching tasks:', error);
+        document.getElementById('tasks').innerHTML = 'Failed to load tasks. Check the console.';
+      });
+  </script>
 </body>
 </html>
